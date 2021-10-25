@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.BorderPane?>
+<?import java.net.URL?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import se.iths.java21.patrik.lab3.tools.ResizableCanvas?>
+
+<BorderPane prefHeight="800.0" prefWidth="800.0" styleClass="root" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.iths.java21.patrik.lab3.PaintController">
+
+    <stylesheets>
+        <URL value="@css/stylesheet.css"/>
+    </stylesheets>
+
+    <top>
+        <VBox>
+            <MenuBar>
+                <Menu text="File">
+                    <MenuItem onAction="#onSave" text="Save"/>
+                    <MenuItem onAction="#onExit" text="Exit"/>
+                </Menu>
+            </MenuBar>
+            <ToolBar>
+                <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10">
+                    <TextField fx:id="shapeSize" text="18"/>
+                    <ColorPicker fx:id="colorPicker"/>
+                    <CheckBox fx:id="selector" text="Select Mode"/>
+                    <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT" spacing="10">
+                        <Button fx:id="circleButton" text="Circle" onAction="#circleClick"/>
+                        <Button fx:id="rectangleButton" text="Rectangle" onAction="#rectangleClick"/>
+                        <Button fx:id="lineButton" text="Line" onAction="#lineClick"/>
+                        <Button fx:id="pointButton" text="Point" onAction="#pointClick"/>
+                    </HBox>
+                </HBox>
+            </ToolBar>
+        </VBox>
+    </top>
+
+    <left>
+        <ListView fx:id="listView" prefWidth="155" onMouseClicked="#listViewClicked"/>
+    </left>
+
+    <center>
+        <ResizableCanvas fx:id="canvas" onMouseClicked="#onCanvasClicked"/>
+    </center>
+
+    <bottom>
+        <HBox spacing="10">
+            <Button fx:id="deleteButton" text="Delete" onAction="#onDelete"/>
+            <Button fx:id="changeSizeButton" text="Change Size" onAction="#onChangeSize"/>
+            <Button fx:id="changeColorButton" text="Change Color" onAction="#onChangeColor"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

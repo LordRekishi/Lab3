@@ -1,0 +1,8 @@
+.root {
+    -fx-base: rgba(60,63,65,255);
+}
+
+Button {
+    -fx-font-size: 14px;
+}
+
