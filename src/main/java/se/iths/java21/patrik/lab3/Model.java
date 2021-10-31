@@ -4,10 +4,18 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
+import se.iths.java21.patrik.lab3.shapes.Circle;
+import se.iths.java21.patrik.lab3.shapes.Rectangle;
 import se.iths.java21.patrik.lab3.shapes.Shape;
+import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 
 public class Model {
+    Deque<ObservableList<Shape>> undoDeque;
+    Deque<ObservableList<Shape>> redoDeque;
     ObservableList<Shape> shapes;
     ObservableList<Shape> selectedShapes;
 
@@ -23,6 +31,8 @@ public class Model {
     private final BooleanProperty selectMode;
 
     public Model() {
+        this.undoDeque = new ArrayDeque<>();
+        this.redoDeque = new ArrayDeque<>();
         this.shapes = FXCollections.observableArrayList();
         this.selectedShapes = FXCollections.observableArrayList();
 
@@ -38,7 +48,6 @@ public class Model {
 
         this.selectMode = new SimpleBooleanProperty();
     }
-
 
 
     public boolean isCircleSelected() {
@@ -145,20 +154,45 @@ public class Model {
 
 
     public void deleteSelectedShapes() {
-        for (var shape : selectedShapes){
+
+        ObservableList<Shape> tempList = getTempList();
+
+        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+
+        for (var shape : selectedShapes) {
             shapes.remove(shape);
         }
     }
 
     public void changeSizeOnSelectedShapes() {
+        ObservableList<Shape> tempList = getTempList();
+
+        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+
         for (var shape : selectedShapes) {
             shape.setSize(getShapeSizeAsDouble());
         }
     }
 
     public void changeColorOnSelectedShapes() {
+        ObservableList<Shape> tempList = getTempList();
+
+        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+
         for (var shape : selectedShapes) {
             shape.setColor(getColor());
         }
+    }
+
+    public ObservableList<Shape> getTempList() {
+        ObservableList<Shape> tempList = FXCollections.observableArrayList();
+
+        for (Shape shape : shapes) {
+            if (shape.getClass() == Rectangle.class)
+                tempList.add(ShapesFactory.rectangleCopyOf(shape));
+            if (shape.getClass() == Circle.class)
+                tempList.add(ShapesFactory.circleCopyOf(shape));
+        }
+        return tempList;
     }
 }

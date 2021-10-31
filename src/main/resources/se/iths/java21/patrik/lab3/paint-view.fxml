@@ -16,6 +16,8 @@
 <?import javafx.scene.control.ListView?>
 <?import se.iths.java21.patrik.lab3.tools.ResizableCanvas?>
 
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.skin.SplitPaneSkin.ContentDivider?>
 <BorderPane prefHeight="800.0" prefWidth="800.0" styleClass="root" xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="se.iths.java21.patrik.lab3.PaintController">
 
@@ -29,6 +31,10 @@
                 <Menu text="File">
                     <MenuItem onAction="#onSave" text="Save"/>
                     <MenuItem onAction="#onExit" text="Exit"/>
+                </Menu>
+                <Menu text="Edit">
+                    <MenuItem onAction="#onUndo" text="Undo"/>
+                    <MenuItem onAction="#onRedo" text="Redo"/>
                 </Menu>
             </MenuBar>
             <ToolBar>
