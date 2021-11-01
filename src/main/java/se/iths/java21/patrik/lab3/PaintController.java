@@ -2,8 +2,10 @@ package se.iths.java21.patrik.lab3;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -21,6 +23,8 @@ import java.io.File;
 public class PaintController {
 
     Model model;
+
+    public MenuItem connectToServer;
 
     public Button circleButton;
     public Button rectangleButton;
@@ -54,6 +58,9 @@ public class PaintController {
 
         selector.selectedProperty().bindBidirectional(model.selectModeProperty());
 
+        model.shapes.addListener((ListChangeListener<Shape>) change -> executeDraw());
+
+
     }
 
     public void onCanvasClicked(MouseEvent mouseEvent) {
@@ -83,12 +90,15 @@ public class PaintController {
             ObservableList<Shape> tempList = model.getTempList();
 
             if (model.isRectangleSelected()) {
+                Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
-                model.shapes.add(ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble()));
+                model.shapes.add(shape);
+                model.sendToServer(shape);
             }
             if (model.isCircleSelected()) {
+                Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
-                model.shapes.add(ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble()));
+                model.shapes.add(shape);
             }
             executeDraw();
         }
@@ -100,8 +110,8 @@ public class PaintController {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         for (var shape : model.shapes) {
-//            shape.draw(gc);
-            shape.drawSVG(new SVGPath());
+            shape.draw(gc);
+//            shape.drawSVG(new SVGPath());
         }
 
 
@@ -190,6 +200,15 @@ public class PaintController {
         executeDraw();
     }
 
+
+    public void connectServer() {
+        if (model.connected.get())
+            connectToServer.setText("Connect to Server");
+        else
+            connectToServer.setText("Disconnect from Server");
+
+        model.connect();
+    }
 
     public void onSave() {
         try {

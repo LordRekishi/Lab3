@@ -29,6 +29,7 @@
         <VBox>
             <MenuBar>
                 <Menu text="File">
+                    <MenuItem onAction="#connectServer" text="Connect to Server" fx:id="connectToServer"/>
                     <MenuItem onAction="#onSave" text="Save"/>
                     <MenuItem onAction="#onExit" text="Exit"/>
                 </Menu>
