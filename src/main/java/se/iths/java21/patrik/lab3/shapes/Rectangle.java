@@ -15,15 +15,8 @@ public class Rectangle extends Shape {
     }
 
     @Override
-    public void drawSVG(SVGPath path) {
-//        path.setContent(" M " + getX() + " " + getY() +
-//                " h " + getSize() +
-//                " v " + getSize() +
-//                " h " + (- getSize()) +
-//                " Z ");
-//        path.setContent("M100 100 h 50 v 50 h -50 Z");
-        path.setContent("M100,100 L300,100 L200,300 z");
-        path.setFill(getColor());
+    public void drawSVG() {
+
     }
 
     @Override

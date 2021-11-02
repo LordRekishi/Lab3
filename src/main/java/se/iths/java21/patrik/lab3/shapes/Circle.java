@@ -15,10 +15,8 @@ public class Circle extends Shape {
     }
 
     @Override
-    public void drawSVG(SVGPath path) {
-        path.setContent(" M " + getX() + " " + getY() +
-                " a " + getSize() + " " + getSize() + " 0 1,0 " + getSize() + " " + getSize());
-        path.setFill(getColor());
+    public void drawSVG() {
+
     }
 
     @Override

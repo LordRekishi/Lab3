@@ -70,7 +70,7 @@ public abstract class Shape {
         this.size = size;
     }
 
-    public abstract void drawSVG(SVGPath path);
+    public abstract void drawSVG();
 
     public abstract void draw(GraphicsContext gc);
 
