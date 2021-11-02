@@ -17,12 +17,11 @@ import java.util.Deque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public class Model {
-    Deque<ObservableList<Shape>> undoDeque;
-    Deque<ObservableList<Shape>> redoDeque;
-    ObservableList<Shape> shapes;
-    ObservableList<Shape> selectedShapes;
+    public Deque<ObservableList<Shape>> undoDeque;
+    public Deque<ObservableList<Shape>> redoDeque;
+    public ObservableList<Shape> shapes;
+    public ObservableList<Shape> selectedShapes;
 
     private final BooleanProperty circleSelected;
     private final BooleanProperty rectangleSelected;

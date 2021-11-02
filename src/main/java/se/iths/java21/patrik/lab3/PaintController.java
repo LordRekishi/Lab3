@@ -82,11 +82,6 @@ public class PaintController {
             }
 
         } else {
-            for (var shape : model.shapes) {
-                shape.setBorderColor(Color.TRANSPARENT);
-                model.selectedShapes.clear();
-            }
-
             ObservableList<Shape> tempList = model.getTempList();
 
             if (model.isRectangleSelected()) {
@@ -113,8 +108,6 @@ public class PaintController {
             shape.draw(gc);
 //            shape.drawSVG(new SVGPath());
         }
-
-
     }
 
     public void circleClick() {
@@ -222,5 +215,13 @@ public class PaintController {
 
     public void onExit() {
         Platform.exit();
+    }
+
+    public void clearSelected() {
+        for (var shape : model.shapes) {
+            shape.setBorderColor(Color.TRANSPARENT);
+        }
+        model.selectedShapes.clear();
+        executeDraw();
     }
 }

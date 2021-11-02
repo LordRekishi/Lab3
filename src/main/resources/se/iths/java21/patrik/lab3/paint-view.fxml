@@ -42,7 +42,7 @@
                 <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="10">
                     <TextField fx:id="shapeSize" text="18"/>
                     <ColorPicker fx:id="colorPicker"/>
-                    <CheckBox fx:id="selector" text="Select Mode"/>
+                    <CheckBox fx:id="selector" text="Select Mode" onAction="#clearSelected"/>
                     <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT" spacing="10">
                         <Button fx:id="circleButton" text="Circle" onAction="#circleClick"/>
                         <Button fx:id="rectangleButton" text="Rectangle" onAction="#rectangleClick"/>

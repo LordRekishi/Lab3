@@ -15,8 +15,11 @@ public class Circle extends Shape {
     }
 
     @Override
-    public void drawSVG() {
-
+    public String drawSVG() {
+        return "<circle cx=\"" + getX() + "\" " +
+                "cy=\"" + getY() + "\" " +
+                "r=\"" + getSize() + "\" " +
+                "fill=\"" + getColor() + "\" />";
     }
 
     @Override

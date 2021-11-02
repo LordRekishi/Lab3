@@ -2,7 +2,6 @@ package se.iths.java21.patrik.lab3.shapes;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 
 public abstract class Shape {
     private Color color;
@@ -70,7 +69,7 @@ public abstract class Shape {
         this.size = size;
     }
 
-    public abstract void drawSVG();
+    public abstract String drawSVG();
 
     public abstract void draw(GraphicsContext gc);
 
