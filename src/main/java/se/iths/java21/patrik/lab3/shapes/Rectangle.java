@@ -3,7 +3,6 @@ package se.iths.java21.patrik.lab3.shapes;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-
 public class Rectangle extends Shape {
 
     protected Rectangle(Color color, double x, double y, double size) {
@@ -16,11 +15,13 @@ public class Rectangle extends Shape {
 
     @Override
     public String drawSVG() {
-        return "<rect cx=\"" + getX() + "\" " +
-                "cy=\"" + getY() + "\" " +
-                "width=\"" + getSize() + "\" " +
-                "height=\"" + getSize() + "\" " +
-                "fill=\"" + getColor() + "\" />";
+        String convertedColor = "#" + getColor().toString().substring(2,10);
+
+        return "<rect x=\"" + (getX() - getSize()) + "\" " +
+                "y=\"" + (getY() - getSize()) + "\" " +
+                "width=\"" + (2 * getSize()) + "\" " +
+                "height=\"" + (2 * getSize()) + "\" " +
+                "fill=\"" + convertedColor + "\" />";
     }
 
     @Override

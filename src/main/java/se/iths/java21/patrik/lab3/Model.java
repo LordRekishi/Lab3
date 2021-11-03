@@ -1,6 +1,5 @@
 package se.iths.java21.patrik.lab3;
 
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,16 +9,13 @@ import se.iths.java21.patrik.lab3.shapes.Rectangle;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
 
-import java.io.*;
-import java.net.Socket;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Model {
     public Deque<ObservableList<Shape>> undoDeque;
     public Deque<ObservableList<Shape>> redoDeque;
+
     public ObservableList<Shape> shapes;
     public ObservableList<Shape> selectedShapes;
 
@@ -37,6 +33,7 @@ public class Model {
     public Model() {
         this.undoDeque = new ArrayDeque<>();
         this.redoDeque = new ArrayDeque<>();
+
         this.shapes = FXCollections.observableArrayList();
         this.selectedShapes = FXCollections.observableArrayList();
 
@@ -161,7 +158,7 @@ public class Model {
 
         ObservableList<Shape> tempList = getTempList();
 
-        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+        undoDeque.addLast(tempList);
 
         for (var shape : selectedShapes) {
             shapes.remove(shape);
@@ -171,7 +168,7 @@ public class Model {
     public void changeSizeOnSelectedShapes() {
         ObservableList<Shape> tempList = getTempList();
 
-        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+        undoDeque.addLast(tempList);
 
         for (var shape : selectedShapes) {
             shape.setSize(getShapeSizeAsDouble());
@@ -181,7 +178,7 @@ public class Model {
     public void changeColorOnSelectedShapes() {
         ObservableList<Shape> tempList = getTempList();
 
-        undoDeque.addLast(FXCollections.observableArrayList(tempList));
+        undoDeque.addLast(tempList);
 
         for (var shape : selectedShapes) {
             shape.setColor(getColor());
@@ -193,59 +190,11 @@ public class Model {
 
         for (Shape shape : shapes) {
             if (shape.getClass() == Rectangle.class)
-                tempList.add(ShapesFactory.rectangleCopyOf(shape));
+                tempList.add(ShapesFactory.rectangleOf(shape));
             if (shape.getClass() == Circle.class)
-                tempList.add(ShapesFactory.circleCopyOf(shape));
+                tempList.add(ShapesFactory.circleOf(shape));
         }
         return tempList;
     }
 
-    private Socket socket;
-    private PrintWriter writer; // Skickar meddelanden till servern
-    private BufferedReader reader; // Läser meddelanden från servern
-    public BooleanProperty connected = new SimpleBooleanProperty();
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    public void connect() {
-        if (connected.get()) {
-            System.out.println("Disconnected from server...");
-            connected.set(false);
-            return;
-        }
-
-        try {
-            socket = new Socket("localhost", 8000);
-            OutputStream output = socket.getOutputStream();
-            writer = new PrintWriter(output, true);
-
-            InputStream input = socket.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(input));
-            connected.set(true);
-            System.out.println("Connected to Server...");
-
-            executorService.submit(this::networkHandler);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendToServer(Shape shape) {
-        if (connected.get()) {
-            writer.println("Created a new Shape with coords, x:" + shape.getX() + " y:" + shape.getY());
-        }
-    }
-
-    private void networkHandler() {
-        try {
-            while (true) {
-                String line = reader.readLine();
-                System.out.println(line);
-                Platform.runLater(() ->
-                shapes.add(ShapesFactory.rectangleOf(Color.PINK, 100, 100, 50)));
-            }
-        } catch (IOException e) {
-            System.out.println("I/O error. Disconnected.");
-            Platform.runLater(() -> connected.set(false));
-        }
-    }
 }

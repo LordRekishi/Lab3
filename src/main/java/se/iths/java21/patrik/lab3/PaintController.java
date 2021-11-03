@@ -5,24 +5,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
+import se.iths.java21.patrik.lab3.tools.SVGWriter;
+import se.iths.java21.patrik.lab3.tools.Server;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 
-
 public class PaintController {
-
     Model model;
+    Server server;
 
     public MenuItem connectToServer;
 
@@ -43,11 +42,8 @@ public class PaintController {
 
     public void initialize() {
         model = new Model();
+        server = new Server();
 
-        // Observable list kan kopplas bidirectional
-        // listView.getSelectionModel().getSelectedItems()
-
-        // Kopplingar till Model
         canvas.widthProperty().addListener(observable -> executeDraw());
         canvas.heightProperty().addListener(observable -> executeDraw());
 
@@ -59,8 +55,6 @@ public class PaintController {
         selector.selectedProperty().bindBidirectional(model.selectModeProperty());
 
         model.shapes.addListener((ListChangeListener<Shape>) change -> executeDraw());
-
-
     }
 
     public void onCanvasClicked(MouseEvent mouseEvent) {
@@ -80,22 +74,20 @@ public class PaintController {
                 }
                 executeDraw();
             }
-
         } else {
             ObservableList<Shape> tempList = model.getTempList();
 
             if (model.isRectangleSelected()) {
                 Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
-                model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
+                model.undoDeque.addLast(tempList);
                 model.shapes.add(shape);
-                model.sendToServer(shape);
+                server.sendToServer(shape);
             }
             if (model.isCircleSelected()) {
                 Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
-                model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
+                model.undoDeque.addLast(tempList);
                 model.shapes.add(shape);
             }
-            executeDraw();
         }
     }
 
@@ -106,7 +98,6 @@ public class PaintController {
 
         for (var shape : model.shapes) {
             shape.draw(gc);
-//            shape.drawSVG(new SVGPath());
         }
     }
 
@@ -155,6 +146,7 @@ public class PaintController {
         listView.refresh();
     }
 
+
     public void listViewClicked() {
         var selectedShape = listView.getSelectionModel().getSelectedItem();
 
@@ -168,6 +160,14 @@ public class PaintController {
         executeDraw();
     }
 
+    public void clearSelected() {
+        for (var shape : model.shapes) {
+            shape.setBorderColor(Color.TRANSPARENT);
+        }
+        model.selectedShapes.clear();
+        executeDraw();
+    }
+
 
     public void onUndo() {
         if (model.undoDeque.isEmpty())
@@ -176,7 +176,7 @@ public class PaintController {
         ObservableList<Shape> tempList = model.getTempList();
 
         model.redoDeque.addLast(FXCollections.observableArrayList(tempList));
-        model.shapes = FXCollections.observableArrayList(model.undoDeque.removeLast());
+        model.shapes = model.undoDeque.removeLast();
         listView.setItems(model.shapes);
         executeDraw();
     }
@@ -188,22 +188,25 @@ public class PaintController {
         ObservableList<Shape> tempList = model.getTempList();
 
         model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
-        model.shapes = FXCollections.observableArrayList(model.redoDeque.removeLast());
+        model.shapes = model.redoDeque.removeLast();
         listView.setItems(model.shapes);
         executeDraw();
     }
 
 
     public void connectServer() {
-        if (model.connected.get())
+        if (server.connected.get())
             connectToServer.setText("Connect to Server");
         else
             connectToServer.setText("Disconnect from Server");
 
-        model.connect();
+        server.connect(model);
     }
 
+
     public void onSave() {
+        SVGWriter.saveSVGFile(model);
+
         try {
             Image snapshot = canvas.snapshot(null, null);
 
@@ -215,13 +218,5 @@ public class PaintController {
 
     public void onExit() {
         Platform.exit();
-    }
-
-    public void clearSelected() {
-        for (var shape : model.shapes) {
-            shape.setBorderColor(Color.TRANSPARENT);
-        }
-        model.selectedShapes.clear();
-        executeDraw();
     }
 }
