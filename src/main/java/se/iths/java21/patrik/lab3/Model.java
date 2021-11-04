@@ -30,6 +30,7 @@ public class Model {
     private final StringProperty shapeSize;
 
     private final BooleanProperty selectMode;
+    private final ObjectProperty<Shape> selectedShape;
 
     public Model() {
         this.shapes = FXCollections.observableArrayList(
@@ -58,6 +59,7 @@ public class Model {
         this.shapeSize = new SimpleStringProperty("18");
 
         this.selectMode = new SimpleBooleanProperty();
+        this.selectedShape = new SimpleObjectProperty<>();
     }
 
 
@@ -163,6 +165,17 @@ public class Model {
         this.selectMode.set(selectMode);
     }
 
+    public Shape getSelectedShape() {
+        return selectedShape.get();
+    }
+
+    public ObjectProperty<Shape> selectedShapeProperty() {
+        return selectedShape;
+    }
+
+    public void setSelectedShape(Shape selectedShape) {
+        this.selectedShape.set(selectedShape);
+    }
 
     public void deleteSelectedShapes() {
 
@@ -215,6 +228,16 @@ public class Model {
     public void updateShapesListWithUndo() {
         shapes.clear();
         shapes.addAll(undoDeque.removeLast());
+    }
+
+    public void selectedShapesContains(Shape selectedShape) {
+        if (selectedShapes.contains(selectedShape)) {
+            selectedShape.setBorderColor(Color.TRANSPARENT);
+            selectedShapes.remove(selectedShape);
+        } else {
+            selectedShape.setBorderColor(Color.RED);
+            selectedShapes.add(selectedShape);
+        }
     }
 
 }

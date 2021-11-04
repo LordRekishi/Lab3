@@ -56,6 +56,8 @@ public class PaintController {
         shapeSize.textProperty().bindBidirectional(model.shapeSizeProperty());
 
         listView.setItems(model.shapes);
+//        listView.getSelectionModel().selectedIndexProperty().bind(model.selectedShapeProperty());
+//        model.selectedShapeProperty().bind(listView.getSelectionModel().selectedIndexProperty());
 
         selector.selectedProperty().bindBidirectional(model.selectModeProperty());
 
@@ -69,13 +71,7 @@ public class PaintController {
         if (model.isSelectMode()) {
             for (var shape : model.shapes) {
                 if (shape.isInsideShape(x, y)) {
-                    if (model.selectedShapes.contains(shape)) {
-                        shape.setBorderColor(Color.TRANSPARENT);
-                        model.selectedShapes.remove(shape);
-                    } else {
-                        shape.setBorderColor(Color.RED);
-                        model.selectedShapes.add(shape);
-                    }
+                    model.selectedShapesContains(shape);
                 }
             }
         } else {
@@ -84,6 +80,7 @@ public class PaintController {
             if (model.isRectangleSelected()) {
                 Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(tempList);
+
                 if (server.isConnected()) {
                     server.sendToServer(shape);
                 } else {
@@ -94,6 +91,7 @@ public class PaintController {
             if (model.isCircleSelected()) {
                 Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(tempList);
+
                 if (server.isConnected()) {
                     server.sendToServer(shape);
                 } else {
@@ -158,13 +156,7 @@ public class PaintController {
     public void listViewClicked() {
         var selectedShape = listView.getSelectionModel().getSelectedItem();
 
-        if (model.selectedShapes.contains(selectedShape)) {
-            selectedShape.setBorderColor(Color.TRANSPARENT);
-            model.selectedShapes.remove(selectedShape);
-        } else {
-            selectedShape.setBorderColor(Color.RED);
-            model.selectedShapes.add(selectedShape);
-        }
+        model.selectedShapesContains(selectedShape);
     }
 
     public void clearSelected() {
