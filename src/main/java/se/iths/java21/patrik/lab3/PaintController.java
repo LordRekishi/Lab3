@@ -1,6 +1,5 @@
 package se.iths.java21.patrik.lab3;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -78,7 +77,6 @@ public class PaintController {
                         model.selectedShapes.add(shape);
                     }
                 }
-                executeDraw();
             }
         } else {
             ObservableList<Shape> tempList = model.getTempList();
@@ -146,18 +144,14 @@ public class PaintController {
 
     public void onDelete() {
         model.deleteSelectedShapes();
-        executeDraw();
     }
 
     public void onChangeSize() {
         model.changeSizeOnSelectedShapes();
-        executeDraw();
     }
 
     public void onChangeColor() {
         model.changeColorOnSelectedShapes();
-        executeDraw();
-        listView.refresh();
     }
 
 
@@ -171,7 +165,6 @@ public class PaintController {
             selectedShape.setBorderColor(Color.RED);
             model.selectedShapes.add(selectedShape);
         }
-        executeDraw();
     }
 
     public void clearSelected() {
@@ -179,7 +172,6 @@ public class PaintController {
             shape.setBorderColor(Color.TRANSPARENT);
         }
         model.selectedShapes.clear();
-        executeDraw();
     }
 
 
@@ -189,10 +181,8 @@ public class PaintController {
 
         ObservableList<Shape> tempList = model.getTempList();
 
-        model.redoDeque.addLast(FXCollections.observableArrayList(tempList));
-        model.shapes = model.undoDeque.removeLast();
-        listView.setItems(model.shapes);
-        executeDraw();
+        model.redoDeque.addLast(tempList);
+        model.updateShapesListWithUndo();
     }
 
     public void onRedo() {
@@ -201,10 +191,8 @@ public class PaintController {
 
         ObservableList<Shape> tempList = model.getTempList();
 
-        model.undoDeque.addLast(FXCollections.observableArrayList(tempList));
-        model.shapes = model.redoDeque.removeLast();
-        listView.setItems(model.shapes);
-        executeDraw();
+        model.undoDeque.addLast(tempList);
+        model.updateShapesListWithRedo();
     }
 
 

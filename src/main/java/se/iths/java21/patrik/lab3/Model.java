@@ -1,5 +1,6 @@
 package se.iths.java21.patrik.lab3;
 
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,11 +14,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class Model {
-    public Deque<ObservableList<Shape>> undoDeque;
-    public Deque<ObservableList<Shape>> redoDeque;
-
     public ObservableList<Shape> shapes;
     public ObservableList<Shape> selectedShapes;
+
+    public Deque<ObservableList<Shape>> undoDeque;
+    public Deque<ObservableList<Shape>> redoDeque;
 
     private final BooleanProperty circleSelected;
     private final BooleanProperty rectangleSelected;
@@ -31,11 +32,20 @@ public class Model {
     private final BooleanProperty selectMode;
 
     public Model() {
+        this.shapes = FXCollections.observableArrayList(
+                shape -> new Observable[]{
+                        shape.xProperty(),
+                        shape.yProperty(),
+                        shape.sizeProperty(),
+                        shape.colorProperty(),
+                        shape.borderColorProperty()
+                }
+        );
+
+        this.selectedShapes = FXCollections.observableArrayList();
+
         this.undoDeque = new ArrayDeque<>();
         this.redoDeque = new ArrayDeque<>();
-
-        this.shapes = FXCollections.observableArrayList();
-        this.selectedShapes = FXCollections.observableArrayList();
 
         this.circleSelected = new SimpleBooleanProperty();
         this.rectangleSelected = new SimpleBooleanProperty();
@@ -195,6 +205,16 @@ public class Model {
                 tempList.add(ShapesFactory.circleOf(shape));
         }
         return tempList;
+    }
+
+    public void updateShapesListWithRedo() {
+        shapes.clear();
+        shapes.addAll(redoDeque.removeLast());
+    }
+
+    public void updateShapesListWithUndo() {
+        shapes.clear();
+        shapes.addAll(undoDeque.removeLast());
     }
 
 }
