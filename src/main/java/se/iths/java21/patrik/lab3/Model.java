@@ -220,14 +220,14 @@ public class Model {
         return tempList;
     }
 
-    public void updateShapesListWithRedo() {
-        shapes.clear();
-        shapes.addAll(redoDeque.removeLast());
-    }
-
     public void updateShapesListWithUndo() {
         shapes.clear();
         shapes.addAll(undoDeque.removeLast());
+    }
+
+    public void updateShapesListWithRedo() {
+        shapes.clear();
+        shapes.addAll(redoDeque.removeLast());
     }
 
     public void selectedShapesContains(Shape selectedShape) {

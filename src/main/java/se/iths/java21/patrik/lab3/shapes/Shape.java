@@ -8,11 +8,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public abstract class Shape {
-    private ObjectProperty<Color> color = new SimpleObjectProperty<>();
-    private ObjectProperty<Color> borderColor = new SimpleObjectProperty<>();
-    private DoubleProperty x = new SimpleDoubleProperty();
-    private DoubleProperty y = new SimpleDoubleProperty();
-    private DoubleProperty size = new SimpleDoubleProperty();
+    private final ObjectProperty<Color> color = new SimpleObjectProperty<>();
+    private final ObjectProperty<Color> borderColor = new SimpleObjectProperty<>();
+    private final DoubleProperty x = new SimpleDoubleProperty();
+    private final DoubleProperty y = new SimpleDoubleProperty();
+    private final DoubleProperty size = new SimpleDoubleProperty();
 
     protected Shape(Color color, double x, double y, double size) {
         setColor(color);
@@ -89,6 +89,7 @@ public abstract class Shape {
     public void setSize(double size) {
         this.size.set(size);
     }
+
 
     public abstract String drawSVG();
 
