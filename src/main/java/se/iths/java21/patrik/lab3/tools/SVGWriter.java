@@ -19,7 +19,8 @@ public class SVGWriter {
 
     public static void saveSVGFile(Model model) {
         fileChooser.setTitle("Save SVG File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("SVG format","*.svg"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("SVG Files","*.svg"));
 
         Path path = Path.of(wrap(() -> fileChooser.showSaveDialog(new Stage()).toURI()));
         List<String> strings = new ArrayList<>();
@@ -49,7 +50,7 @@ public class SVGWriter {
     }
 
     private static void shapeSVGInfoToString(Shape shape, List<String> strings) {
-        strings.add(String.join(" ",shape.drawSVG()));
+        strings.add(shape.drawSVG());
     }
 
     private static String endOfSVGString() {

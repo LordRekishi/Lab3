@@ -15,7 +15,7 @@ public class Circle extends Shape {
 
     @Override
     public String drawSVG() {
-        String convertedColor = String.join("","#",getColor().toString().substring(2,8));
+        String convertedColor = "#" + getColor().toString().substring(2,10);
 
         return "<circle cx=\"" + getX() + "\" " +
                 "cy=\"" + getY() + "\" " +

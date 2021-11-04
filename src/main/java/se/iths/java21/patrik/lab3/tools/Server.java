@@ -3,7 +3,6 @@ package se.iths.java21.patrik.lab3.tools;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.paint.Color;
 import se.iths.java21.patrik.lab3.Model;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
@@ -16,10 +15,10 @@ import java.util.concurrent.Executors;
 public class Server {
     private Model model;
     private Socket socket;
-    private PrintWriter writer; // Skickar meddelanden till servern
-    private BufferedReader reader; // Läser meddelanden från servern
-    public BooleanProperty connected = new SimpleBooleanProperty();
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private PrintWriter writer;
+    private BufferedReader reader;
+    private BooleanProperty connected = new SimpleBooleanProperty();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public void connect(Model model) {
         this.model = model;
@@ -47,7 +46,7 @@ public class Server {
 
     public void sendToServer(Shape shape) {
         if (connected.get()) {
-            writer.println("Created a new Shape with coords, x:" + shape.getX() + " y:" + shape.getY());
+            writer.println(shape.drawSVG());
         }
     }
 
@@ -56,12 +55,27 @@ public class Server {
             while (true) {
                 String line = reader.readLine();
                 System.out.println(line);
-                Platform.runLater(() ->
-                        model.shapes.add(ShapesFactory.rectangleOf(Color.PINK, 100, 100, 50)));
+
+                if (!line.contains("has joined")) {
+                    Platform.runLater(() ->
+                            model.shapes.add(ShapesFactory.convertSVGToShape(line)));
+                }
             }
         } catch (IOException e) {
             System.out.println("I/O error. Disconnected.");
             Platform.runLater(() -> connected.set(false));
         }
+    }
+
+    public boolean isConnected() {
+        return connected.get();
+    }
+
+    public BooleanProperty connectedProperty() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected.set(connected);
     }
 }

@@ -40,6 +40,12 @@ public class PaintController {
     public TextField shapeSize;
     public ListView<Shape> listView;
 
+    public PaintController() {}
+
+    public PaintController(Model model) {
+        this.model = model;
+    }
+
     public void initialize() {
         model = new Model();
         server = new Server();
@@ -80,13 +86,21 @@ public class PaintController {
             if (model.isRectangleSelected()) {
                 Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(tempList);
-                model.shapes.add(shape);
-                server.sendToServer(shape);
+                if (server.isConnected()) {
+                    server.sendToServer(shape);
+                } else {
+                    model.shapes.add(shape);
+                }
+
             }
             if (model.isCircleSelected()) {
                 Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
                 model.undoDeque.addLast(tempList);
-                model.shapes.add(shape);
+                if (server.isConnected()) {
+                    server.sendToServer(shape);
+                } else {
+                    model.shapes.add(shape);
+                }
             }
         }
     }
@@ -195,7 +209,7 @@ public class PaintController {
 
 
     public void connectServer() {
-        if (server.connected.get())
+        if (server.isConnected())
             connectToServer.setText("Connect to Server");
         else
             connectToServer.setText("Disconnect from Server");
@@ -217,6 +231,6 @@ public class PaintController {
     }
 
     public void onExit() {
-        Platform.exit();
+        System.exit(0);
     }
 }
