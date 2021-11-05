@@ -49,7 +49,6 @@ public class PaintController {
         listView.setItems(model.shapes);
 
         selector.selectedProperty().bindBidirectional(model.selectModeProperty());
-
     }
 
     public void onCanvasClicked(MouseEvent mouseEvent) {
@@ -87,7 +86,6 @@ public class PaintController {
             model.shapes.add(shape);
         }
     }
-
 
     private void executeDraw() {
         GraphicsContext gc = canvas.getGraphicsContext2D();

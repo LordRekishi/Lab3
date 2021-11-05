@@ -3,7 +3,6 @@ package se.iths.java21.patrik.lab3.tools;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import se.iths.java21.patrik.lab3.Model;
-import se.iths.java21.patrik.lab3.PaintApplication;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 
 import java.io.IOException;
@@ -15,7 +14,7 @@ import java.util.List;
 import static se.iths.java21.patrik.lab3.tools.CheckedSupplier.wrap;
 
 public class SVGWriter {
-    private static FileChooser fileChooser = new FileChooser();
+    private static final FileChooser fileChooser = new FileChooser();
 
     public static void saveSVGFile(Model model) {
         setUpFileChooser();
