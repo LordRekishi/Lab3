@@ -28,7 +28,7 @@
         <VBox>
             <MenuBar>
                 <Menu text="File">
-                    <MenuItem onAction="#connectServer" text="Connect to Server" fx:id="connectToServer"/>
+                    <MenuItem fx:id="connectToServer" onAction="#connectServer" text="Connect to Server" />
                     <MenuItem onAction="#onSave" text="Save"/>
                     <MenuItem onAction="#onExit" text="Exit"/>
                 </Menu>
@@ -43,10 +43,8 @@
                     <ColorPicker fx:id="colorPicker"/>
                     <CheckBox fx:id="selector" text="Select Mode" onAction="#clearSelected"/>
                     <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT" spacing="10">
-                        <Button fx:id="circleButton" text="Circle" onAction="#circleClick"/>
-                        <Button fx:id="rectangleButton" text="Rectangle" onAction="#rectangleClick"/>
-                        <Button fx:id="lineButton" text="Line" onAction="#lineClick"/>
-                        <Button fx:id="pointButton" text="Point" onAction="#pointClick"/>
+                        <Button text="Circle" onAction="#circleClick"/>
+                        <Button text="Rectangle" onAction="#rectangleClick"/>
                     </HBox>
                 </HBox>
             </ToolBar>
@@ -63,9 +61,9 @@
 
     <bottom>
         <HBox spacing="10">
-            <Button fx:id="deleteButton" text="Delete" onAction="#onDelete"/>
-            <Button fx:id="changeSizeButton" text="Change Size" onAction="#onChangeSize"/>
-            <Button fx:id="changeColorButton" text="Change Color" onAction="#onChangeColor"/>
+            <Button text="Delete" onAction="#onDelete"/>
+            <Button text="Change Size" onAction="#onChangeSize"/>
+            <Button text="Change Color" onAction="#onChangeColor"/>
         </HBox>
     </bottom>
 

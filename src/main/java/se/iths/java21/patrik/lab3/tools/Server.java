@@ -3,6 +3,8 @@ package se.iths.java21.patrik.lab3.tools;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import se.iths.java21.patrik.lab3.Model;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
@@ -17,8 +19,10 @@ public class Server {
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
-    private BooleanProperty connected = new SimpleBooleanProperty();
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private final BooleanProperty connected = new SimpleBooleanProperty();
+    private final StringProperty connectToServerMenuItemText = new SimpleStringProperty("Connect to Server");
 
     public void connect(Model model) {
         this.model = model;
@@ -29,7 +33,7 @@ public class Server {
         }
 
         try {
-            socket = new Socket("localhost", 8000);
+            socket = new Socket("178.174.162.51", 8000);
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
@@ -56,7 +60,7 @@ public class Server {
                 String line = reader.readLine();
                 System.out.println(line);
 
-                if (!line.contains("has joined")) {
+                if (!line.contains("has joined") && !line.contains("left")) {
                     Platform.runLater(() ->
                             model.shapes.add(ShapesFactory.convertSVGToShape(line)));
                 }
@@ -77,5 +81,18 @@ public class Server {
 
     public void setConnected(boolean connected) {
         this.connected.set(connected);
+    }
+
+
+    public String getConnectToServerMenuItemText() {
+        return connectToServerMenuItemText.get();
+    }
+
+    public StringProperty connectToServerMenuItemTextProperty() {
+        return connectToServerMenuItemText;
+    }
+
+    public void setConnectToServerMenuItemText(String connectToServerMenuItemText) {
+        this.connectToServerMenuItemText.set(connectToServerMenuItemText);
     }
 }

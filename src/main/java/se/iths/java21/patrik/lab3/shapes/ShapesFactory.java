@@ -25,23 +25,33 @@ public class ShapesFactory {
     public static Shape convertSVGToShape(String line) {
         try {
             Pattern pattern = Pattern.compile("=");
-            String[] arr = pattern.split(line);
+            String[] svgStringArray = pattern.split(line);
 
             if (line.contains("rect")) {
-                double size = Double.parseDouble(arr[3].substring(1, 5)) / 2;
-                double x = Double.parseDouble(arr[1].substring(1, 5)) + size;
-                double y = Double.parseDouble(arr[2].substring(1, 5)) + size;
-                Color rectColor = Color.valueOf(arr[5].substring(1, 10));
-                return rectangleOf(rectColor, x, y, size);
+                return getRectangle(svgStringArray);
             } else {
-                double size = Double.parseDouble(arr[3].substring(1, 5));
-                double x = Double.parseDouble(arr[1].substring(1, 5));
-                double y = Double.parseDouble(arr[2].substring(1, 5));
-                Color circleColor = Color.valueOf(arr[4].substring(1, 10));
-                return circleOf(circleColor, x, y, size);
+                return getCircle(svgStringArray);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException();
         }
+    }
+
+    private static Rectangle getRectangle(String[] svgStringArray) {
+        double size = Double.parseDouble(svgStringArray[3].substring(1, 5)) / 2;
+        double x = Double.parseDouble(svgStringArray[1].substring(1, 5)) + size;
+        double y = Double.parseDouble(svgStringArray[2].substring(1, 5)) + size;
+        Color rectColor = Color.valueOf(svgStringArray[5].substring(1, 10));
+
+        return rectangleOf(rectColor, x, y, size);
+    }
+
+    private static Circle getCircle(String[] svgStringArray) {
+        double size = Double.parseDouble(svgStringArray[3].substring(1, 5));
+        double x = Double.parseDouble(svgStringArray[1].substring(1, 5));
+        double y = Double.parseDouble(svgStringArray[2].substring(1, 5));
+        Color circleColor = Color.valueOf(svgStringArray[4].substring(1, 10));
+
+        return circleOf(circleColor, x, y, size);
     }
 }

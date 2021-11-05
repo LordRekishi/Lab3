@@ -240,4 +240,10 @@ public class Model {
         }
     }
 
+    void checkIfInsideShape(double x, double y) {
+        for (var shape : shapes) {
+            if (shape.isInsideShape(x, y))
+                selectedShapesContains(shape);
+        }
+    }
 }

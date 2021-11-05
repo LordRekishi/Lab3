@@ -1,4 +1,4 @@
-module se.iths.java21.patrik.lab3.lab3 {
+module se.iths.java21.patrik.lab3 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.desktop;

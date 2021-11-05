@@ -1,6 +1,5 @@
 package se.iths.java21.patrik.lab3;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -19,27 +18,17 @@ import javax.imageio.ImageIO;
 import java.io.File;
 
 public class PaintController {
-    Model model;
-    Server server;
+    public Model model;
+    public Server server;
 
     public MenuItem connectToServer;
-
-    public Button circleButton;
-    public Button rectangleButton;
-    public Button lineButton;
-    public Button pointButton;
-    public Button deleteButton;
-    public Button changeSizeButton;
-    public Button changeColorButton;
-
     public Canvas canvas;
-
     public CheckBox selector;
     public ColorPicker colorPicker;
     public TextField shapeSize;
     public ListView<Shape> listView;
 
-    public PaintController() {}
+    public PaintController(){}
 
     public PaintController(Model model) {
         this.model = model;
@@ -51,17 +40,16 @@ public class PaintController {
 
         canvas.widthProperty().addListener(observable -> executeDraw());
         canvas.heightProperty().addListener(observable -> executeDraw());
+        model.shapes.addListener((ListChangeListener<Shape>) change -> executeDraw());
 
         colorPicker.valueProperty().bindBidirectional(model.colorProperty());
         shapeSize.textProperty().bindBidirectional(model.shapeSizeProperty());
+        connectToServer.textProperty().bindBidirectional(server.connectToServerMenuItemTextProperty());
 
         listView.setItems(model.shapes);
-//        listView.getSelectionModel().selectedIndexProperty().bind(model.selectedShapeProperty());
-//        model.selectedShapeProperty().bind(listView.getSelectionModel().selectedIndexProperty());
 
         selector.selectedProperty().bindBidirectional(model.selectModeProperty());
 
-        model.shapes.addListener((ListChangeListener<Shape>) change -> executeDraw());
     }
 
     public void onCanvasClicked(MouseEvent mouseEvent) {
@@ -69,37 +57,37 @@ public class PaintController {
         double y = mouseEvent.getY();
 
         if (model.isSelectMode()) {
-            for (var shape : model.shapes) {
-                if (shape.isInsideShape(x, y)) {
-                    model.selectedShapesContains(shape);
-                }
-            }
+            model.checkIfInsideShape(x, y);
         } else {
-            ObservableList<Shape> tempList = model.getTempList();
-
-            if (model.isRectangleSelected()) {
-                Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
-                model.undoDeque.addLast(tempList);
-
-                if (server.isConnected()) {
-                    server.sendToServer(shape);
-                } else {
-                    model.shapes.add(shape);
-                }
-
-            }
-            if (model.isCircleSelected()) {
-                Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
-                model.undoDeque.addLast(tempList);
-
-                if (server.isConnected()) {
-                    server.sendToServer(shape);
-                } else {
-                    model.shapes.add(shape);
-                }
-            }
+            checkShapeTypeAndAdd(x, y);
         }
     }
+
+    private void checkShapeTypeAndAdd(double x, double y) {
+        ObservableList<Shape> tempList = model.getTempList();
+
+        if (model.isRectangleSelected()) {
+            Shape shape = ShapesFactory.rectangleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
+            model.undoDeque.addLast(tempList);
+
+            checkServerOrLocalThenAddShape(shape);
+        }
+        if (model.isCircleSelected()) {
+            Shape shape = ShapesFactory.circleOf(model.getColor(), x, y, model.getShapeSizeAsDouble());
+            model.undoDeque.addLast(tempList);
+
+            checkServerOrLocalThenAddShape(shape);
+        }
+    }
+
+    private void checkServerOrLocalThenAddShape(Shape shape) {
+        if (server.isConnected()) {
+            server.sendToServer(shape);
+        } else {
+            model.shapes.add(shape);
+        }
+    }
+
 
     private void executeDraw() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -111,32 +99,15 @@ public class PaintController {
         }
     }
 
+
     public void circleClick() {
-        model.circleSelectedProperty().setValue(true);
-        model.rectangleSelectedProperty().setValue(false);
-        model.lineSelectedProperty().setValue(false);
-        model.pointSelectedProperty().setValue(false);
+        model.setCircleSelected(true);
+        model.setRectangleSelected(false);
     }
 
     public void rectangleClick() {
-        model.circleSelectedProperty().setValue(false);
-        model.rectangleSelectedProperty().setValue(true);
-        model.lineSelectedProperty().setValue(false);
-        model.pointSelectedProperty().setValue(false);
-    }
-
-    public void lineClick() {
-        model.circleSelectedProperty().setValue(false);
-        model.rectangleSelectedProperty().setValue(false);
-        model.lineSelectedProperty().setValue(true);
-        model.pointSelectedProperty().setValue(false);
-    }
-
-    public void pointClick() {
-        model.circleSelectedProperty().setValue(false);
-        model.rectangleSelectedProperty().setValue(false);
-        model.lineSelectedProperty().setValue(false);
-        model.pointSelectedProperty().setValue(true);
+        model.setCircleSelected(false);
+        model.setRectangleSelected(true);
     }
 
 
@@ -167,6 +138,16 @@ public class PaintController {
     }
 
 
+    public void connectServer() {
+        if (server.isConnected())
+            server.setConnectToServerMenuItemText("Connect to Server");
+        else
+            server.setConnectToServerMenuItemText("Disconnect from Server");
+
+        server.connect(model);
+    }
+
+
     public void onUndo() {
         if (model.undoDeque.isEmpty())
             return;
@@ -185,16 +166,6 @@ public class PaintController {
 
         model.undoDeque.addLast(tempList);
         model.updateShapesListWithRedo();
-    }
-
-
-    public void connectServer() {
-        if (server.isConnected())
-            connectToServer.setText("Connect to Server");
-        else
-            connectToServer.setText("Disconnect from Server");
-
-        server.connect(model);
     }
 
 

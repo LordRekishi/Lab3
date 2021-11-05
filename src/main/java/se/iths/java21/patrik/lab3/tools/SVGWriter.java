@@ -18,26 +18,43 @@ public class SVGWriter {
     private static FileChooser fileChooser = new FileChooser();
 
     public static void saveSVGFile(Model model) {
-        fileChooser.setTitle("Save SVG File");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("SVG Files","*.svg"));
+        setUpFileChooser();
 
-        Path path = Path.of(wrap(() -> fileChooser.showSaveDialog(new Stage()).toURI()));
-        List<String> strings = new ArrayList<>();
+        Path path = getPath();
+        if (path == null)
+            return;
 
-        buildSVGString(model, strings);
+        List<String> svgString = new ArrayList<>();
+        buildSVGString(model, svgString);
 
         try {
-            Files.write(path, strings);
+            Files.write(path, svgString);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void buildSVGString(Model model, List<String> strings) {
-        strings.add(startOfSVGString());
-        model.shapes.forEach(shape -> shapeSVGInfoToString(shape, strings));
-        strings.add(endOfSVGString());
+    private static void setUpFileChooser() {
+        fileChooser.setTitle("Save SVG File");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("SVG Files","*.svg"));
+    }
+
+    private static Path getPath() {
+        Path path;
+
+        try {
+            path = Path.of(wrap(() -> fileChooser.showSaveDialog(new Stage()).toURI()));
+        } catch (RuntimeException e) {
+            return null;
+        }
+        return path;
+    }
+
+    private static void buildSVGString(Model model, List<String> svgString) {
+        svgString.add(startOfSVGString());
+        model.shapes.forEach(shape -> shapeSVGInfoToString(shape, svgString));
+        svgString.add(endOfSVGString());
     }
 
     private static String startOfSVGString() {
