@@ -52,7 +52,7 @@ public class SVGWriter {
 
     private static void buildSVGString(Model model, List<String> svgString) {
         svgString.add(startOfSVGString());
-        model.shapes.forEach(shape -> shapeSVGInfoToString(shape, svgString));
+        model.getShapes().forEach(shape -> shapeSVGInfoToString(shape, svgString));
         svgString.add(endOfSVGString());
     }
 

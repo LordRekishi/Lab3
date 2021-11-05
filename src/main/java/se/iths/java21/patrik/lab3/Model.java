@@ -5,20 +5,20 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
-import se.iths.java21.patrik.lab3.shapes.Circle;
-import se.iths.java21.patrik.lab3.shapes.Rectangle;
 import se.iths.java21.patrik.lab3.shapes.Shape;
 import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
+import se.iths.java21.patrik.lab3.tools.Server;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class Model {
-    public ObservableList<Shape> shapes;
-    public ObservableList<Shape> selectedShapes;
+    private Server server;
+    private ObservableList<Shape> shapes;
+    private ObservableList<Shape> selectedShapes;
 
-    public Deque<ObservableList<Shape>> undoDeque;
-    public Deque<ObservableList<Shape>> redoDeque;
+    private Deque<ObservableList<Shape>> undoDeque;
+    private Deque<ObservableList<Shape>> redoDeque;
 
     private final BooleanProperty circleSelected;
     private final BooleanProperty rectangleSelected;
@@ -30,9 +30,9 @@ public class Model {
     private final StringProperty shapeSize;
 
     private final BooleanProperty selectMode;
-    private final ObjectProperty<Shape> selectedShape;
 
     public Model() {
+        server = new Server();
         this.shapes = FXCollections.observableArrayList(
                 shape -> new Observable[]{
                         shape.xProperty(),
@@ -59,7 +59,82 @@ public class Model {
         this.shapeSize = new SimpleStringProperty("18");
 
         this.selectMode = new SimpleBooleanProperty();
-        this.selectedShape = new SimpleObjectProperty<>();
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
+
+
+    public ObservableList<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(ObservableList<Shape> shapes) {
+        this.shapes = shapes;
+    }
+
+    public void addToShapes(Shape shape) {
+        shapes.add(shape);
+    }
+
+
+    public ObservableList<Shape> getSelectedShapes() {
+        return selectedShapes;
+    }
+
+    public void setSelectedShapes(ObservableList<Shape> selectedShapes) {
+        this.selectedShapes = selectedShapes;
+    }
+
+    public void addToSelectedShapes(Shape shape) {
+        selectedShapes.add(shape);
+    }
+
+    public void clearSelectedShapes() {
+        for (var shape : shapes) {
+            shape.setBorderColor(Color.TRANSPARENT);
+        }
+        selectedShapes.clear();
+    }
+
+
+    public Deque<ObservableList<Shape>> getUndoDeque() {
+        return undoDeque;
+    }
+
+    public void setUndoDeque(Deque<ObservableList<Shape>> undoDeque) {
+        this.undoDeque = undoDeque;
+    }
+
+    public void addToUndoDeque() {
+        ObservableList<Shape> tempList = getTempList();
+        undoDeque.addLast(tempList);
+    }
+
+    public ObservableList<Shape> getFromUndoDeque() {
+        return undoDeque.removeLast();
+    }
+
+    public Deque<ObservableList<Shape>> getRedoDeque() {
+        return redoDeque;
+    }
+
+    public void setRedoDeque(Deque<ObservableList<Shape>> redoDeque) {
+        this.redoDeque = redoDeque;
+    }
+
+    public void addToRedoDeque() {
+        ObservableList<Shape> tempList = getTempList();
+        redoDeque.addLast(tempList);
+    }
+
+    public ObservableList<Shape> getFromRedoDeque() {
+        return redoDeque.removeLast();
     }
 
 
@@ -165,23 +240,9 @@ public class Model {
         this.selectMode.set(selectMode);
     }
 
-    public Shape getSelectedShape() {
-        return selectedShape.get();
-    }
-
-    public ObjectProperty<Shape> selectedShapeProperty() {
-        return selectedShape;
-    }
-
-    public void setSelectedShape(Shape selectedShape) {
-        this.selectedShape.set(selectedShape);
-    }
 
     public void deleteSelectedShapes() {
-
-        ObservableList<Shape> tempList = getTempList();
-
-        undoDeque.addLast(tempList);
+        addToUndoDeque();
 
         for (var shape : selectedShapes) {
             shapes.remove(shape);
@@ -189,9 +250,7 @@ public class Model {
     }
 
     public void changeSizeOnSelectedShapes() {
-        ObservableList<Shape> tempList = getTempList();
-
-        undoDeque.addLast(tempList);
+        addToUndoDeque();
 
         for (var shape : selectedShapes) {
             shape.setSize(getShapeSizeAsDouble());
@@ -199,14 +258,13 @@ public class Model {
     }
 
     public void changeColorOnSelectedShapes() {
-        ObservableList<Shape> tempList = getTempList();
-
-        undoDeque.addLast(tempList);
+        addToUndoDeque();
 
         for (var shape : selectedShapes) {
             shape.setColor(getColor());
         }
     }
+
 
     public ObservableList<Shape> getTempList() {
         ObservableList<Shape> tempList = FXCollections.observableArrayList();
@@ -216,6 +274,7 @@ public class Model {
         }
         return tempList;
     }
+
 
     public void updateShapesListWithUndo() {
         shapes.clear();
@@ -227,6 +286,7 @@ public class Model {
         shapes.addAll(redoDeque.removeLast());
     }
 
+
     public void selectedShapesContains(Shape selectedShape) {
         if (selectedShapes.contains(selectedShape)) {
             selectedShape.setBorderColor(Color.TRANSPARENT);
@@ -237,10 +297,56 @@ public class Model {
         }
     }
 
-    void checkIfInsideShape(double x, double y) {
+
+    public void checkIfInsideShape(double x, double y) {
         for (var shape : shapes) {
             if (shape.isInsideShape(x, y))
                 selectedShapesContains(shape);
         }
+    }
+
+
+    public void addShapeToShapesList(Shape shape) {
+        if (shape == null)
+            return;
+
+        addToUndoDeque();
+        addToShapes(shape);
+    }
+
+    public void addShapeToShapesList(String line) {
+        if (line == null || line.contains("joined") || line.contains("left"))
+            return;
+
+        addToUndoDeque();
+        addToShapes(ShapesFactory.convertSVGToShape(line));
+    }
+
+
+    public void checkServerOrLocalThenAddShape(Shape shape) {
+        if (server.isConnected()) {
+            server.sendToServer(shape);
+        } else {
+            addShapeToShapesList(shape);
+        }
+    }
+
+    public void connectToServer() {
+        if (server.isConnected())
+            server.setConnectToServerMenuItemText("Connect to Server");
+        else
+            server.setConnectToServerMenuItemText("Disconnect from Server");
+
+        server.connect(this);
+    }
+
+    public void toggleCircle() {
+        setCircleSelected(true);
+        setRectangleSelected(false);
+    }
+
+    public void toggleRectangle() {
+        setCircleSelected(false);
+        setRectangleSelected(true);
     }
 }

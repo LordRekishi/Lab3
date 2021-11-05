@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PaintControllerTest {
     PaintController paintController = new PaintController(new Model());
     Model model = paintController.model;
-    ObservableList<Shape> shapes = model.shapes;
+    ObservableList<Shape> shapes = model.getShapes();
 
     Shape circle1 = ShapesFactory.circleOf(Color.BLACK, 100, 200, 50);
     Shape circle2 = ShapesFactory.circleOf(Color.RED, 40, 100, 10);
@@ -38,10 +38,10 @@ class PaintControllerTest {
     void addShapeToShapeListAndUndoDequeThenExecuteUndoShouldReturnPreviousListOfShapes() {
         shapes.add(circle1);
 
-        model.undoDeque.addLast(model.getTempList());
+        model.addToUndoDeque();
         shapes.add(rectangle1);
 
-        model.undoDeque.addLast(model.getTempList());
+        model.addToUndoDeque();
         shapes.add(circle2);
 
         // Shapes: 3 shapes
@@ -56,20 +56,17 @@ class PaintControllerTest {
     @Test
     void addShapeToShapesAndUndoDequeThenOnUntoShouldReturnEmptyListAndReturn() {
         shapes.add(rectangle1);
-        model.undoDeque.addLast(model.getTempList());
+        model.addToUndoDeque();
 
         paintController.onUndo();
-        paintController.onUndo();
 
-        var result = model.undoDeque.size();
-
-        assertEquals(0, result, "Should return empty");
+        assertDoesNotThrow(() -> paintController.onUndo(), "Should not throw exception");
     }
 
     @Test
     void addShapesToShapesListAndToSelectedShapesThenRunOnDeleteShouldReturnEmptyList() {
         shapes.add(rectangle2);
-        model.selectedShapes.add(rectangle2);
+        model.addToSelectedShapes(rectangle2);
 
         paintController.onDelete();
 
@@ -81,7 +78,7 @@ class PaintControllerTest {
     @Test
     void addShapesToShapesListAndToSelectedShapesThenRunOnChangeSizeShouldReturnUpdatedSize() {
         shapes.add(rectangle2);
-        model.selectedShapes.add(rectangle2);
+        model.addToSelectedShapes(rectangle2);
 
         model.setShapeSize("10");
 
@@ -95,7 +92,7 @@ class PaintControllerTest {
     @Test
     void addShapesToShapesListAndToSelectedShapesThenRunOnChangeColorShouldReturnUpdatedColor() {
         shapes.add(rectangle1);
-        model.selectedShapes.add(rectangle1);
+        model.addToSelectedShapes(rectangle1);
 
         model.setColor(Color.RED);
 
@@ -108,14 +105,14 @@ class PaintControllerTest {
 
     @Test
     void addShapeToSelectedShapesAndShapesThenClearSelectedShouldReturnZeroBorderShouldBeTransparent() {
-        model.selectedShapes.add(circle2);
+        model.addToSelectedShapes(circle2);
 
         circle2.setBorderColor(Color.RED);
         shapes.add(circle2);
 
         paintController.clearSelected();
 
-        var result = model.selectedShapes.size();
+        var result = model.getSelectedShapes().size();
         var borderColor = circle2.getBorderColor();
 
         assertEquals(0, result, "Should return zero size");

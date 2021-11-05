@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import se.iths.java21.patrik.lab3.Model;
 import se.iths.java21.patrik.lab3.shapes.Shape;
-import se.iths.java21.patrik.lab3.shapes.ShapesFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -60,10 +59,8 @@ public class Server {
                 String line = reader.readLine();
                 System.out.println(line);
 
-                if (!line.contains("joined") && !line.contains("left")) {
-                    Platform.runLater(() ->
-                            model.shapes.add(ShapesFactory.convertSVGToShape(line)));
-                }
+                Platform.runLater(() ->
+                        model.addShapeToShapesList(line));
             }
         } catch (IOException e) {
             System.out.println("I/O error. Disconnected.");
