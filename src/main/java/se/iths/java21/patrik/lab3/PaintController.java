@@ -118,19 +118,11 @@ public class PaintController {
 
 
     public void onUndo() {
-        if (model.getUndoDeque().isEmpty())
-            return;
-
-        model.addToRedoDeque();
-        model.updateShapesListWithUndo();
+        model.undo();
     }
 
     public void onRedo() {
-        if (model.getRedoDeque().isEmpty())
-            return;
-
-        model.addToUndoDeque();
-        model.updateShapesListWithRedo();
+        model.redo();
     }
 
 

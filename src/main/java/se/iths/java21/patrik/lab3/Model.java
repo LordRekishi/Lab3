@@ -340,6 +340,7 @@ public class Model {
         server.connect(this);
     }
 
+
     public void toggleCircle() {
         setCircleSelected(true);
         setRectangleSelected(false);
@@ -348,5 +349,22 @@ public class Model {
     public void toggleRectangle() {
         setCircleSelected(false);
         setRectangleSelected(true);
+    }
+
+
+    public void undo() {
+        if (getUndoDeque().isEmpty())
+            return;
+
+        addToRedoDeque();
+        updateShapesListWithUndo();
+    }
+
+    public void redo() {
+        if (getRedoDeque().isEmpty())
+            return;
+
+        addToUndoDeque();
+        updateShapesListWithRedo();
     }
 }
