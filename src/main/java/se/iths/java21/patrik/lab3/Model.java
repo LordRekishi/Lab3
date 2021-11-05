@@ -212,10 +212,7 @@ public class Model {
         ObservableList<Shape> tempList = FXCollections.observableArrayList();
 
         for (Shape shape : shapes) {
-            if (shape.getClass() == Rectangle.class)
-                tempList.add(ShapesFactory.rectangleOf(shape));
-            if (shape.getClass() == Circle.class)
-                tempList.add(ShapesFactory.circleOf(shape));
+            tempList.add(shape.copyOf());
         }
         return tempList;
     }

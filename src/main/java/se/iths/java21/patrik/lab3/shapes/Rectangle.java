@@ -14,6 +14,11 @@ public class Rectangle extends Shape {
     }
 
     @Override
+    public Shape copyOf() {
+        return new Rectangle(this);
+    }
+
+    @Override
     public String drawSVG() {
         String convertedColor = "#" + getColor().toString().substring(2,10);
 

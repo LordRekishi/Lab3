@@ -60,7 +60,7 @@ public class Server {
                 String line = reader.readLine();
                 System.out.println(line);
 
-                if (!line.contains("has joined") && !line.contains("left")) {
+                if (!line.contains("joined") && !line.contains("left")) {
                     Platform.runLater(() ->
                             model.shapes.add(ShapesFactory.convertSVGToShape(line)));
                 }

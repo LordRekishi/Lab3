@@ -91,6 +91,8 @@ public abstract class Shape {
     }
 
 
+    public abstract Shape copyOf();
+
     public abstract String drawSVG();
 
     public abstract void draw(GraphicsContext gc);

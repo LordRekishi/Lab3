@@ -14,14 +14,6 @@ public class ShapesFactory {
         return new Circle(color, x, y, size);
     }
 
-    public static Rectangle rectangleOf(Shape shape) {
-        return new Rectangle(shape);
-    }
-
-    public static Circle circleOf(Shape shape) {
-        return new Circle(shape);
-    }
-
     public static Shape convertSVGToShape(String line) {
         try {
             Pattern pattern = Pattern.compile("=");
